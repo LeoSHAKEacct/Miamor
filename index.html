@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mii amo — Internal Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --tc: #C4622D; --tc2: #A8521F; --dark: #1a1410; --green: #1C2B1E; --gold: #D4956A; --muted: #8C857C; }
+body { font-family: 'Jost', sans-serif; background: var(--dark); }
+.top-nav { position: sticky; top: 0; z-index: 999; background: var(--dark); display: flex; justify-content: center; gap: 4px; padding: 10px; border-bottom: 0.5px solid rgba(255,255,255,0.1); }
+.top-nav button { font-family: 'Jost', sans-serif; font-size: 11px; letter-spacing: 1.8px; text-transform: uppercase; padding: 7px 22px; border-radius: 4px; border: 0.5px solid rgba(255,255,255,0.18); background: none; color: rgba(255,255,255,0.45); cursor: pointer; transition: all 0.2s; }
+.top-nav button.active { background: var(--tc); border-color: var(--tc); color: white; }
+.top-nav button:hover:not(.active) { color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.35); }
+.page { display: none; min-height: calc(100vh - 46px); }
+.page.active { display: block; }
+#p-enter { background: var(--green); display: flex; align-items: center; justify-content: center; padding: 60px 20px; }
+.enter-card { background: rgba(28,43,30,0.95); border: 0.5px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 52px 48px 44px; width: 420px; text-align: center; }
+.e-sub { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 3.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 34px; }
+.e-title { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 300; color: white; letter-spacing: 2px; margin-bottom: 6px; line-height: 1.1; }
+.e-title em { font-style: italic; color: var(--gold); }
+.e-type { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.28); margin-bottom: 38px; }
+.e-tagline { font-size: 13px; color: rgba(255,255,255,0.42); font-weight: 300; margin-bottom: 32px; line-height: 1.7; }
+.btn-main { display: block; width: 100%; padding: 15px 24px; background: var(--tc); color: white; font-family: 'Jost', sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 14px; transition: background 0.2s; }
+.btn-main:hover { background: var(--tc2); }
+.btn-staff-link { background: none; border: none; color: rgba(255,255,255,0.22); font-family: 'Jost', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; padding: 8px; transition: color 0.2s; display: inline-flex; align-items: center; gap: 7px; }
+.btn-staff-link:hover { color: rgba(255,255,255,0.55); }
+.e-divider { height: 0.5px; background: rgba(255,255,255,0.07); margin: 26px 0; }
+.relais { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.18); }
+#p-guest { background: var(--green); }
+.g-header { background: rgba(20,33,22,0.98); border-bottom: 0.5px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; height: 60px; }
+.g-logo { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; letter-spacing: 2px; color: white; }
+.g-logo em { font-style: italic; color: var(--gold); }
+.btn-exit { background: none; border: 0.5px solid rgba(255,255,255,0.14); color: rgba(255,255,255,0.45); font-family: 'Jost', sans-serif; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 14px; border-radius: 4px; cursor: pointer; }
+.lang { display: flex; align-items: center; gap: 2px; }
+.lang button { background: none; border: none; font-family: 'Jost', sans-serif; font-size: 11px; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); cursor: pointer; padding: 4px 7px; }
+.lang button.on { color: white; }
+.lang span { color: rgba(255,255,255,0.18); font-size: 11px; }
+.g-tabs { background: rgba(20,33,22,0.98); border-bottom: 0.5px solid rgba(255,255,255,0.07); display: flex; padding: 0 40px; }
+.g-tab { display: flex; align-items: center; gap: 7px; padding: 14px 18px; font-family: 'Jost', sans-serif; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.32); cursor: pointer; border: none; border-bottom: 2px solid transparent; background: none; white-space: nowrap; transition: color 0.2s; }
+.g-tab.on { color: white; border-bottom-color: var(--tc); }
+.g-tab:hover:not(.on) { color: rgba(255,255,255,0.65); }
+.g-body { padding: 44px 40px; }
+.welcome-bar { background: rgba(196,98,45,0.1); border: 0.5px solid rgba(196,98,45,0.22); border-radius: 8px; padding: 16px 22px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 36px; }
+.welcome-bar p { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: rgba(255,255,255,0.75); }
+.welcome-bar p strong { color: var(--gold); font-weight: 400; }
+.stay-meta { font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.32); text-align: right; line-height: 1.8; }
+.sec-title { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 300; color: white; line-height: 1.1; margin-bottom: 8px; }
+.sec-title em { font-style: italic; color: var(--gold); }
+.sec-sub { font-size: 12px; color: rgba(255,255,255,0.35); letter-spacing: 0.5px; margin-bottom: 32px; }
+.svc-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+.svc-card { background: rgba(255,255,255,0.04); border: 0.5px solid rgba(255,255,255,0.09); border-radius: 10px; padding: 28px 16px 24px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.svc-card:hover { background: rgba(255,255,255,0.07); border-color: rgba(196,98,45,0.45); }
+.svc-icon { font-size: 30px; display: block; margin-bottom: 14px; }
+.svc-name { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 400; color: white; margin-bottom: 5px; }
+.svc-sub { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.28); }
+.credit-bar { margin-top: 36px; background: rgba(255,255,255,0.03); border: 0.5px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 20px 26px; display: flex; align-items: center; justify-content: space-between; }
+.credit-lbl { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.28); margin-bottom: 5px; }
+.credit-val { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: white; }
+.credit-val span { font-size: 13px; color: rgba(255,255,255,0.32); }
+.credit-val.gold { color: var(--gold); }
+#p-staff { background: var(--dark); }
+.s-header { background: rgba(22,17,13,0.99); border-bottom: 0.5px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; height: 56px; }
+.s-logo { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 300; letter-spacing: 2px; color: rgba(255,255,255,0.7); }
+.s-logo em { font-style: italic; color: var(--gold); }
+.s-logo small { font-family: 'Jost', sans-serif; font-size: 11px; color: rgba(255,255,255,0.28); letter-spacing: 1px; }
+.s-right { display: flex; align-items: center; gap: 10px; }
+.s-badge { background: rgba(196,98,45,0.15); border: 0.5px solid rgba(196,98,45,0.3); color: var(--gold); font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase; padding: 5px 12px; border-radius: 4px; }
+.s-btn { background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.55); font-family: 'Jost', sans-serif; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 14px; border-radius: 4px; cursor: pointer; }
+.s-btn.p { background: var(--tc); border-color: var(--tc); color: white; }
+.s-nav { background: rgba(22,17,13,0.99); border-bottom: 0.5px solid rgba(255,255,255,0.06); display: flex; padding: 0 28px; overflow-x: auto; }
+.s-nav-item { display: flex; align-items: center; gap: 7px; padding: 12px 16px; font-family: 'Jost', sans-serif; font-size: 11px; letter-spacing: 1.8px; text-transform: uppercase; color: rgba(255,255,255,0.3); cursor: pointer; white-space: nowrap; border: none; background: none; border-bottom: 2px solid transparent; transition: color 0.2s; }
+.s-nav-item.on { color: white; border-bottom-color: var(--tc); }
+.s-nav-item:hover:not(.on) { color: rgba(255,255,255,0.62); }
+.cal-topbar { background: white; border-bottom: 0.5px solid rgba(42,36,32,0.1); display: flex; align-items: center; justify-content: space-between; padding: 12px 28px; }
+.cal-wk-lbl { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; color: #2A2420; }
+.cal-legend { display: flex; gap: 16px; align-items: center; }
+.cal-leg-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #8C857C; }
+.cal-dot { width: 8px; height: 8px; border-radius: 50%; }
+.cal-navs { display: flex; gap: 4px; align-items: center; }
+.cal-nb { background: none; border: 0.5px solid rgba(42,36,32,0.15); color: #8C857C; width: 30px; height: 30px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+.cal-today { background: #2A2420; color: white; border: none; font-family: 'Jost', sans-serif; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 14px; border-radius: 4px; cursor: pointer; }
+.wk-grid { display: grid; grid-template-columns: 78px repeat(7,1fr); background: #F5F1EB; }
+.wk-head { text-align: center; padding: 12px 6px; border-right: 0.5px solid rgba(42,36,32,0.07); border-bottom: 0.5px solid rgba(42,36,32,0.09); background: white; }
+.wk-head-empty { background: #FAF7F3; border-right: 0.5px solid rgba(42,36,32,0.1); border-bottom: 0.5px solid rgba(42,36,32,0.09); }
+.wk-dn { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #8C857C; margin-bottom: 4px; }
+.wk-dd { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; color: #2A2420; }
+.wk-dd.today { width: 30px; height: 30px; background: var(--tc); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 15px; }
+.t-label { font-size: 11px; color: #8C857C; text-align: right; padding: 10px 8px 0 0; border-right: 0.5px solid rgba(42,36,32,0.1); background: #FAF7F3; height: 74px; }
+.cal-cell { border-right: 0.5px solid rgba(42,36,32,0.06); border-bottom: 0.5px solid rgba(42,36,32,0.06); background: white; height: 74px; padding: 6px; }
+.cal-cell.tc { background: #FFF9F5; }
+.ev { background: rgba(196,98,45,0.13); border-left: 2.5px solid var(--tc); border-radius: 0 3px 3px 0; padding: 4px 7px; font-size: 11px; color: #7A3518; line-height: 1.35; margin-bottom: 3px; }
+.ev.sage { background: rgba(107,123,109,0.11); border-left-color: #6B7B6D; color: #3A4D3C; }
+.ev-n { font-weight: 500; font-size: 11px; }
+.ev-t { font-size: 10px; opacity: 0.68; }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <button id="nb-enter" class="active" onclick="go('enter')">01 · Enter</button>
+  <button id="nb-guest" onclick="go('guest')">02 · Guest portal</button>
+  <button id="nb-staff" onclick="go('staff')">03 · Staff portal</button>
+</nav>
+
+<div id="p-enter" class="page active">
+  <div style="background:var(--green);min-height:calc(100vh - 46px);display:flex;align-items:center;justify-content:center;padding:60px 20px;">
+    <div class="enter-card">
+      <div style="width:60px;height:60px;margin:0 auto 10px;">
+        <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M30 10 C20 10, 12 18, 12 28 C12 38, 20 46, 30 46 C40 46, 48 38, 48 28" stroke="#D4956A" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M18 28 C22 20, 30 16, 38 20 C44 23, 46 30, 42 36" stroke="rgba(255,255,255,0.25)" stroke-width="1" stroke-linecap="round"/>
+          <circle cx="30" cy="28" r="2.5" fill="#D4956A" opacity="0.65"/>
+          <path d="M30 46 L30 50" stroke="#D4956A" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M24 49 L36 49" stroke="#D4956A" stroke-width="1" stroke-linecap="round" opacity="0.45"/>
+        </svg>
+      </div>
+      <p class="e-sub">Sedona · Arizona</p>
+      <h1 class="e-title">mii <em>amo</em></h1>
+      <p class="e-type">Spa &amp; Wellness Resort</p>
+      <p class="e-tagline">Welcome to your journey within.<br>Please enter to access your personalized experience.</p>
+      <button class="btn-main" onclick="go('guest')">Enter · Bienvenido</button>
+      <button class="btn-staff-link" onclick="go('staff')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Staff access
+      </button>
+      <div class="e-divider"></div>
+      <p class="relais">Relais &amp; Chateaux · Member property</p>
+    </div>
+  </div>
+</div>
+
+<div id="p-guest" class="page">
+  <header class="g-header">
+    <button class="btn-exit" onclick="go('enter')">← Exit</button>
+    <div class="g-logo">mii <em>amo</em></div>
+    <div class="lang">
+      <button class="on">EN</button><span>|</span>
+      <button>ES</button><span>|</span>
+      <button>FR</button>
+    </div>
+  </header>
+  <nav class="g-tabs">
+    <button class="g-tab on">✦ &nbsp;Spa &amp; Massage</button>
+    <button class="g-tab">◈ &nbsp;Fitness &amp; Trail</button>
+    <button class="g-tab">◇ &nbsp;Creativity</button>
+    <button class="g-tab">○ &nbsp;Culinary</button>
+    <button class="g-tab">⊞ &nbsp;My Journey</button>
+  </nav>
+  <div class="g-body">
+    <div class="welcome-bar">
+      <p>Welcome back, <strong>Eleanor</strong> — your 7-night journey begins today.</p>
+      <div class="stay-meta">Jun 3 – Jun 10, 2026<br>Suite · Sedona View</div>
+    </div>
+    <div class="sec-title">Spa &amp; <em>Wellness</em></div>
+    <p class="sec-sub">Sedona · Red Rock Country · Choose your experience</p>
+    <div class="svc-grid">
+      <div class="svc-card"><span class="svc-icon">✦</span><p class="svc-name">Therapies</p><p class="svc-sub">Holistic healing</p></div>
+      <div class="svc-card"><span class="svc-icon">◈</span><p class="svc-name">Massages</p><p class="svc-sub">Expert bodywork</p></div>
+      <div class="svc-card"><span class="svc-icon">◇</span><p class="svc-name">Beauty Treatments</p><p class="svc-sub">Skin &amp; wellness</p></div>
+      <div class="svc-card"><span class="svc-icon">⊞</span><p class="svc-name">Calendar</p><p class="svc-sub">Activities &amp; schedule</p></div>
+    </div>
+    <div class="credit-bar">
+      <div><p class="credit-lbl">Journey spa credit</p><p class="credit-val">$180 <span>remaining today</span></p></div>
+      <div style="text-align:center"><p class="credit-lbl">Journey days</p><p class="credit-val gold">7</p></div>
+      <div style="text-align:right"><p class="credit-lbl">Next service</p><p style="font-size:13px;color:white;">Red Rock Massage<br><span style="font-size:11px;color:rgba(255,255,255,0.38);">Tomorrow, 10:00 am</span></p></div>
+    </div>
+  </div>
+</div>
+
+<div id="p-staff" class="page">
+  <header class="s-header">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="btn-exit" style="border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.35);" onclick="go('enter')">←</button>
+      <div class="s-logo">mii <em>amo</em> <small>· Admin</small></div>
+    </div>
+    <div class="s-right">
+      <div class="s-badge">Staff · LeonelTelesmeneses</div>
+      <button class="s-btn">Disponibilidad</button>
+      <button class="s-btn p">Dashboard</button>
+    </div>
+  </header>
+  <nav class="s-nav">
+    <button class="s-nav-item on">⊞ Calendar</button>
+    <button class="s-nav-item">◎ Guests</button>
+    <button class="s-nav-item">◇ Restaurant</button>
+    <button class="s-nav-item">○ Team</button>
+    <button class="s-nav-item">▭ Rooms</button>
+    <button class="s-nav-item">✦ Spa Activity</button>
+    <button class="s-nav-item">◈ Timesheet</button>
+  </nav>
+  <div style="background:#F5F1EB;min-height:calc(100vh - 112px);">
+    <div class="cal-topbar">
+      <div style="display:flex;align-items:center;gap:20px;">
+        <p class="cal-wk-lbl">1 – 7 Jun 2026</p>
+        <div class="cal-legend">
+          <div class="cal-leg-item"><div class="cal-dot" style="background:var(--tc)"></div>Spa services</div>
+          <div class="cal-leg-item"><div class="cal-dot" style="background:#6B7B6D"></div>Fitness &amp; trail</div>
+        </div>
+      </div>
+      <div class="cal-navs">
+        <button class="cal-nb">&#8249;</button>
+        <button class="cal-today">Hoy</button>
+        <button class="cal-nb">&#8250;</button>
+      </div>
+    </div>
+    <div class="wk-grid">
+      <div class="wk-head wk-head-empty"></div>
+      <div class="wk-head"><p class="wk-dn">Lun</p><div class="wk-dd">1</div></div>
+      <div class="wk-head"><p class="wk-dn">Mar</p><div class="wk-dd">2</div></div>
+      <div class="wk-head" style="background:#FFF9F5"><p class="wk-dn">Mie</p><div class="wk-dd today">3</div></div>
+      <div class="wk-head"><p class="wk-dn">Jue</p><div class="wk-dd">4</div></div>
+      <div class="wk-head"><p class="wk-dn">Vie</p><div class="wk-dd">5</div></div>
+      <div class="wk-head"><p class="wk-dn">Sab</p><div class="wk-dd">6</div></div>
+      <div class="wk-head"><p class="wk-dn">Dom</p><div class="wk-dd">7</div></div>
+      <div class="t-label">7–9 am</div>
+      <div class="cal-cell"></div>
+      <div class="cal-cell"><div class="ev sage"><div class="ev-n">Trail hike · Oak Creek</div><div class="ev-t">7:30 am</div></div></div>
+      <div class="cal-cell tc"><div class="ev"><div class="ev-n">Red Rock Massage</div><div class="ev-t">8:00 am · E. Hawthorne</div></div></div>
+      <div class="cal-cell"></div>
+      <div class="cal-cell"><div class="ev sage"><div class="ev-n">Yoga · Canyon View</div><div class="ev-t">7:00 am</div></div></div>
+      <div class="cal-cell"></div>
+      <div class="cal-cell"></div>
+      <div class="t-label">10–12 pm</div>
+      <div class="cal-cell"><div class="ev"><div class="ev-n">Crystal Healing</div><div class="ev-t">10:00 am · T. Riedel</div></div></div>
+      <div class="cal-cell"></div>
+      <div class="cal-cell tc"><div class="ev"><div class="ev-n">Skin Ritual</div><div class="ev-t">11:00 am · S. Okonkwo</div></div></div>
+      <div class="cal-cell"><div class="ev"><div class="ev-n">Couples Massage</div><div class="ev-t">10:30 am · M. Bell</div></div></div>
+      <div class="cal-cell"></div>
+      <div class="cal-cell"><div class="ev"><div class="ev-n">Deep Tissue</div><div class="ev-t">10:00 am</div></div></div>
+      <div class="cal-cell"></div>
+      <div class="t-label">2–5 pm</div>
+      <div class="cal-cell"></div>
+      <div class="cal-cell"><div class="ev"><div class="ev-n">Sound Bath</div><div class="ev-t">2:30 pm</div></div></div>
+      <div class="cal-cell tc"><div class="ev sage"><div class="ev-n">Art studio · Creativity</div><div class="ev-t">3:00 pm · Group</div></div></div>
+      <div class="cal-cell"></div>
+      <div class="cal-cell"><div class="ev"><div class="ev-n">Vortex Journey</div><div class="ev-t">2:00 pm</div></div></div>
+      <div class="cal-cell"><div class="ev"><div class="ev-n">Pathways Lecture</div><div class="ev-t">4:00 pm · All guests</div></div></div>
+      <div class="cal-cell"></div>
+      <div class="t-label">5–8 pm</div>
+      <div class="cal-cell"></div>
+      <div class="cal-cell"></div>
+      <div class="cal-cell tc"><div class="ev"><div class="ev-n">Sunset Meditation</div><div class="ev-t">6:30 pm · Grotto</div></div></div>
+      <div class="cal-cell"></div>
+      <div class="cal-cell"></div>
+      <div class="cal-cell"><div class="ev sage"><div class="ev-n">Evening hike</div><div class="ev-t">5:30 pm</div></div></div>
+      <div class="cal-cell"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function go(name) {
+  var pages = document.querySelectorAll('.page');
+  for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
+  var btns = document.querySelectorAll('.top-nav button');
+  for (var j = 0; j < btns.length; j++) btns[j].classList.remove('active');
+  document.getElementById('p-' + name).classList.add('active');
+  document.getElementById('nb-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
